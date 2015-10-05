@@ -119,7 +119,10 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  'interactive' governor for latency-sensitive workloads.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> f4a85ad... cpufreq: Add impulse governor
 config CPU_FREQ_DEFAULT_GOV_IMPULSE
 	bool "impulse"
 	select CPU_FREQ_GOV_IMPULSE
@@ -129,6 +132,7 @@ config CPU_FREQ_DEFAULT_GOV_IMPULSE
 	  loading your cpufreq low-level hardware driver, using the
 	  'impulse' governor for latency-sensitive workloads.
 
+<<<<<<< HEAD
 config CPU_FREQ_DEFAULT_GOV_ELEMENTALX
 	bool "elementalx"
 	select CPU_FREQ_GOV_ELEMENTALX
@@ -149,6 +153,8 @@ config CPU_FREQ_DEFAULT_GOV_ZZMOOVE
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
 =======
 >>>>>>> df44131... cpufreq: add elementalx governor
+=======
+>>>>>>> f4a85ad... cpufreq: Add impulse governor
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -224,7 +230,10 @@ config CPU_FREQ_GOV_INTERACTIVE
 	  If in doubt, say N.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> f4a85ad... cpufreq: Add impulse governor
 config CPU_FREQ_GOV_IMPULSE
 	tristate "'impulse' cpufreq policy governor"
 	help
@@ -233,6 +242,7 @@ config CPU_FREQ_GOV_IMPULSE
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config CPU_FREQ_GOV_ELEMENTALX
 	tristate "'elementalx' cpufreq policy governor"
 	select CPU_FREQ_TABLE
@@ -260,6 +270,8 @@ config CPU_FREQ_GOV_ZZMOOVE
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
 =======
 >>>>>>> df44131... cpufreq: add elementalx governor
+=======
+>>>>>>> f4a85ad... cpufreq: Add impulse governor
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ

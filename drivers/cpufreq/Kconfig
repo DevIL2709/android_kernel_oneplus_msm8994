@@ -136,6 +136,7 @@ config CPU_FREQ_DEFAULT_GOV_ELEMENTALX
 	help
 	  Use the CPUFreq governor 'elementalx' as default.
 
+<<<<<<< HEAD
 config CPU_FREQ_DEFAULT_GOV_ZZMOOVE
 	bool "zzmoove"
 	select CPU_FREQ_GOV_ZZMOOVE
@@ -146,6 +147,8 @@ config CPU_FREQ_DEFAULT_GOV_ZZMOOVE
 	  % frequency steps to get smooth up/downscaling dependant on CPU load.
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -243,6 +246,7 @@ config CPU_FREQ_GOV_ELEMENTALX
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config CPU_FREQ_GOV_ZZMOOVE
 	tristate "'zzmoove' cpufreq governor"
 	depends on CPU_FREQ
@@ -254,6 +258,8 @@ config CPU_FREQ_GOV_ZZMOOVE
 	  if in doubt, say N.
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ

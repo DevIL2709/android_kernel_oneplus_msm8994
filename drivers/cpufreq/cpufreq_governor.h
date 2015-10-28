@@ -127,10 +127,14 @@ static void *get_cpu_dbs_info_s(int cpu)				\
  * od_*: On-demand governor
  * cs_*: Conservative governor
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
  * ex_*: ElementalX governor
  * zz_*: ZZMoove governor
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+ * ex_*: ElementalX governor
+>>>>>>> df44131... cpufreq: add elementalx governor
  */
 
 /* Per cpu structures */
@@ -174,13 +178,17 @@ struct cs_cpu_dbs_info_s {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 struct ex_cpu_dbs_info_s {
 	struct cpu_dbs_common_info cdbs;
 	unsigned int down_floor;
 	unsigned int enable:1;
 };
 
+<<<<<<< HEAD
 struct zz_cpu_dbs_info_s {
 	struct cpu_dbs_common_info cdbs;
 	unsigned int down_skip;
@@ -189,6 +197,8 @@ struct zz_cpu_dbs_info_s {
 };
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 /* Per policy Governors sysfs tunables */
 struct od_dbs_tuners {
 	unsigned int ignore_nice_load;
@@ -209,7 +219,10 @@ struct cs_dbs_tuners {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 struct ex_dbs_tuners {
 	unsigned int ignore_nice_load;
 	unsigned int sampling_rate;
@@ -220,6 +233,7 @@ struct ex_dbs_tuners {
 	unsigned int powersave;
 };
 
+<<<<<<< HEAD
 struct zz_dbs_tuners {
 	unsigned int ignore_nice_load;
 	unsigned int sampling_rate;
@@ -237,6 +251,8 @@ struct zz_dbs_tuners {
 };
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 /* Common Governor data across policies */
 struct dbs_data;
 struct common_dbs_data {
@@ -244,10 +260,14 @@ struct common_dbs_data {
 	#define GOV_ONDEMAND		0
 	#define GOV_CONSERVATIVE	1
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	#define GOV_ELEMENTALX		2
 	#define GOV_ZZMOOVE		3
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	#define GOV_ELEMENTALX		2
+>>>>>>> df44131... cpufreq: add elementalx governor
 	int governor;
 	struct attribute_group *attr_group_gov_sys; /* one governor - system */
 	struct attribute_group *attr_group_gov_pol; /* one governor - policy */
@@ -264,12 +284,16 @@ struct common_dbs_data {
 	void (*gov_check_cpu)(int cpu, unsigned int load);
 	int (*init)(struct dbs_data *dbs_data);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	int (*init_ex)(struct dbs_data *dbs_data, struct cpufreq_policy *policy);
 	int (*init_cs)(struct dbs_data *dbs_data, struct cpufreq_policy *policy);
 	int (*init_od)(struct dbs_data *dbs_data, struct cpufreq_policy *policy);
 	int (*init_zz)(struct dbs_data *dbs_data, struct cpufreq_policy *policy);
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	int (*init_ex)(struct dbs_data *dbs_data, struct cpufreq_policy *policy);
+>>>>>>> df44131... cpufreq: add elementalx governor
 	void (*exit)(struct dbs_data *dbs_data);
 
 	/* Governor specific ops, see below */
@@ -280,6 +304,7 @@ struct common_dbs_data {
 struct dbs_data {
 	struct common_dbs_data *cdata;
 	unsigned int min_sampling_rate;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	struct cpufreq_frequency_table *freq_table;
@@ -295,6 +320,9 @@ struct dbs_data {
 	unsigned int scaling_mode_up;
 	unsigned int scaling_mode_down;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	struct cpufreq_frequency_table *freq_table;
+>>>>>>> df44131... cpufreq: add elementalx governor
 	int usage_count;
 	void *tuners;
 

@@ -36,17 +36,35 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 	struct od_dbs_tuners *od_tuners = dbs_data->tuners;
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	struct ex_dbs_tuners *ex_tuners = dbs_data->tuners;
 	struct zz_dbs_tuners *zz_tuners = dbs_data->tuners;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	struct ex_dbs_tuners *ex_tuners = dbs_data->tuners;
+>>>>>>> df44131... cpufreq: add elementalx governor
 	struct cpufreq_policy *policy;
+	unsigned int sampling_rate;
 	unsigned int max_load = 0;
 	unsigned int ignore_nice;
 	unsigned int j;
 
-	if (dbs_data->cdata->governor == GOV_ONDEMAND)
+	if (dbs_data->cdata->governor == GOV_ONDEMAND) {
+		struct od_cpu_dbs_info_s *od_dbs_info =
+				dbs_data->cdata->get_cpu_dbs_info_s(cpu);
+
+		/*
+		 * Sometimes, the ondemand governor uses an additional
+		 * multiplier to give long delays. So apply this multiplier to
+		 * the 'sampling_rate', so as to keep the wake-up-from-idle
+		 * detection logic a bit conservative.
+		 */
+		sampling_rate = od_tuners->sampling_rate;
+		sampling_rate *= od_dbs_info->rate_mult;
+
 		ignore_nice = od_tuners->ignore_nice_load;
+<<<<<<< HEAD
 <<<<<<< HEAD
 	else
 =======
@@ -59,7 +77,15 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 	} else {
 		sampling_rate = cs_tuners->sampling_rate;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
+		sampling_rate = ex_tuners->sampling_rate;
+		ignore_nice = ex_tuners->ignore_nice_load;
+	} else {
+		sampling_rate = cs_tuners->sampling_rate;
+>>>>>>> df44131... cpufreq: add elementalx governor
 		ignore_nice = cs_tuners->ignore_nice_load;
+	}
 
 	policy = cdbs->cur_policy;
 
@@ -112,7 +138,36 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 		if (unlikely(!wall_time || wall_time < idle_time))
 			continue;
 
-		load = 100 * (wall_time - idle_time) / wall_time;
+		/*
+		 * If the CPU had gone completely idle, and a task just woke up
+		 * on this CPU now, it would be unfair to calculate 'load' the
+		 * usual way for this elapsed time-window, because it will show
+		 * near-zero load, irrespective of how CPU intensive that task
+		 * actually is. This is undesirable for latency-sensitive bursty
+		 * workloads.
+		 *
+		 * To avoid this, we reuse the 'load' from the previous
+		 * time-window and give this task a chance to start with a
+		 * reasonably high CPU frequency. (However, we shouldn't over-do
+		 * this copy, lest we get stuck at a high load (high frequency)
+		 * for too long, even when the current system load has actually
+		 * dropped down. So we perform the copy only once, upon the
+		 * first wake-up from idle.)
+		 *
+		 * Detecting this situation is easy: the governor's deferrable
+		 * timer would not have fired during CPU-idle periods. Hence
+		 * an unusually large 'wall_time' (as compared to the sampling
+		 * rate) indicates this scenario.
+		 */
+		if (unlikely(wall_time > (2 * sampling_rate)) &&
+						j_cdbs->copy_prev_load) {
+			load = j_cdbs->prev_load;
+			j_cdbs->copy_prev_load = false;
+		} else {
+			load = 100 * (wall_time - idle_time) / wall_time;
+			j_cdbs->prev_load = load;
+			j_cdbs->copy_prev_load = true;
+		}
 
 		if (load > max_load)
 			max_load = load;
@@ -192,6 +247,7 @@ static void set_sampling_rate(struct dbs_data *dbs_data,
 		struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 		cs_tuners->sampling_rate = sampling_rate;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
 		struct ex_dbs_tuners *ex_tuners = dbs_data->tuners;
@@ -200,6 +256,11 @@ static void set_sampling_rate(struct dbs_data *dbs_data,
 		struct zz_dbs_tuners *zz_tuners = dbs_data->tuners;
 		zz_tuners->sampling_rate = sampling_rate;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+	} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
+		struct ex_dbs_tuners *ex_tuners = dbs_data->tuners;
+		ex_tuners->sampling_rate = sampling_rate;
+>>>>>>> df44131... cpufreq: add elementalx governor
 	} else {
 		struct od_dbs_tuners *od_tuners = dbs_data->tuners;
 		od_tuners->sampling_rate = sampling_rate;
@@ -213,18 +274,25 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 	struct od_cpu_dbs_info_s *od_dbs_info = NULL;
 	struct cs_cpu_dbs_info_s *cs_dbs_info = NULL;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	struct od_ops *od_ops = NULL;
 	struct od_dbs_tuners *od_tuners = NULL;
 	struct cs_dbs_tuners *cs_tuners = NULL;
 =======
 	struct ex_cpu_dbs_info_s *ex_dbs_info = NULL;
 	struct zz_cpu_dbs_info_s *zz_dbs_info = NULL;
+=======
+	struct ex_cpu_dbs_info_s *ex_dbs_info = NULL;
+>>>>>>> df44131... cpufreq: add elementalx governor
 	struct od_ops *od_ops = NULL;
 	struct od_dbs_tuners *od_tuners = NULL;
 	struct cs_dbs_tuners *cs_tuners = NULL;
 	struct ex_dbs_tuners *ex_tuners = NULL;
+<<<<<<< HEAD
 	struct zz_dbs_tuners *zz_tuners = NULL;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 	struct cpu_dbs_common_info *cpu_cdbs;
 	unsigned int sampling_rate, latency, ignore_nice, j, cpu = policy->cpu;
 	int io_busy = 0;
@@ -256,6 +324,7 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		dbs_data->cdata = cdata;
 		dbs_data->usage_count = 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		rc = cdata->init(dbs_data);
 =======
 
@@ -272,6 +341,14 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		}
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+
+		if (cdata->governor == GOV_ELEMENTALX)
+			rc = cdata->init_ex(dbs_data, policy);
+		else
+			rc = cdata->init(dbs_data);
+
+>>>>>>> df44131... cpufreq: add elementalx governor
 		if (rc) {
 			pr_err("%s: POLICY_INIT: init() failed\n", __func__);
 			kfree(dbs_data);
@@ -363,18 +440,24 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		sampling_rate = cs_tuners->sampling_rate;
 		ignore_nice = cs_tuners->ignore_nice_load;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 	} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
 		ex_tuners = dbs_data->tuners;
 		ex_dbs_info = dbs_data->cdata->get_cpu_dbs_info_s(cpu);
 		sampling_rate = ex_tuners->sampling_rate;
 		ignore_nice = ex_tuners->ignore_nice_load;
+<<<<<<< HEAD
 	} else if (dbs_data->cdata->governor == GOV_ZZMOOVE) {
 		zz_tuners = dbs_data->tuners;
 		zz_dbs_info = dbs_data->cdata->get_cpu_dbs_info_s(cpu);
 		sampling_rate = zz_tuners->sampling_rate;
 		ignore_nice = zz_tuners->ignore_nice_load;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+>>>>>>> df44131... cpufreq: add elementalx governor
 	} else {
 		od_tuners = dbs_data->tuners;
 		od_dbs_info = dbs_data->cdata->get_cpu_dbs_info_s(cpu);
@@ -394,11 +477,19 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		for_each_cpu(j, policy->cpus) {
 			struct cpu_dbs_common_info *j_cdbs =
 				dbs_data->cdata->get_cpu_cdbs(j);
+			unsigned int prev_load;
 
 			j_cdbs->cpu = j;
 			j_cdbs->cur_policy = policy;
 			j_cdbs->prev_cpu_idle = get_cpu_idle_time(j,
 					       &j_cdbs->prev_cpu_wall, io_busy);
+
+			prev_load = (unsigned int)
+				(j_cdbs->prev_cpu_wall - j_cdbs->prev_cpu_idle);
+			j_cdbs->prev_load = 100 * prev_load /
+					(unsigned int) j_cdbs->prev_cpu_wall;
+			j_cdbs->copy_prev_load = true;
+
 			if (ignore_nice)
 				j_cdbs->prev_cpu_nice =
 					kcpustat_cpu(j).cpustat[CPUTIME_NICE];
@@ -413,6 +504,7 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			cs_dbs_info->enable = 1;
 			cs_dbs_info->requested_freq = policy->cur;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
 			ex_dbs_info->down_floor = 0;
@@ -422,6 +514,11 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			zz_dbs_info->enable = 1;
 			zz_dbs_info->requested_freq = policy->cur;
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+		} else if (dbs_data->cdata->governor == GOV_ELEMENTALX) {
+			ex_dbs_info->down_floor = 0;
+			ex_dbs_info->enable = 1;
+>>>>>>> df44131... cpufreq: add elementalx governor
 		} else {
 			od_dbs_info->rate_mult = 1;
 			od_dbs_info->sample_type = OD_NORMAL_SAMPLE;
@@ -442,6 +539,7 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			cs_dbs_info->enable = 0;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		if (dbs_data->cdata->governor == GOV_ELEMENTALX)
 			ex_dbs_info->enable = 0;
@@ -450,6 +548,11 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			zz_dbs_info->enable = 0;
 
 >>>>>>> 54881591... cpufreq: add ZZMoove big.LITTLE Edition (bLE) development version as of 09.01.2016
+=======
+		if (dbs_data->cdata->governor == GOV_ELEMENTALX)
+			ex_dbs_info->enable = 0;
+
+>>>>>>> df44131... cpufreq: add elementalx governor
 		gov_cancel_work(dbs_data, policy);
 
 		mutex_lock(&dbs_data->mutex);
